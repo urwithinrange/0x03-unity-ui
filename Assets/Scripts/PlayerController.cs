@@ -1,13 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
 	public float speed = 4000f;
 	public Rigidbody rb;
 	private int score = 0;
+    public Text scoreText;
 	public int health = 5;
+    public Text healthText;
+    public Text winLoseText;
+    public Image winLoseBG;
+    
+
 
     // Start is called before the first frame update
     void Start()
@@ -34,25 +42,47 @@ public class PlayerController : MonoBehaviour
         {
 		    rb.AddForce(0, 0, -speed * Time.deltaTime);
 		}
+        if (health <= 0)
+        {
+            winLoseBG.transform.gameObject.SetActive(true);
+            winLoseBG.color = Color.red;
+            winLoseText.color = Color.white;
+            winLoseText.text = "Game Over!";
+        }
 	}
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.GetComponent<Collider>().tag == "Pickup")
         {
             score++;
-            Debug.Log($"Score: {score}");
-            Object.Destroy(other.gameObject);
+            SetScoreText();
+            // Debug.Log($"Score: {score}");
+            // Object.Destroy(other.gameObject);
+            other.gameObject.SetActive(false);
         }
 
         if (other.GetComponent<Collider>().tag == "Trap")
         {
             health--;
-            Debug.Log($"Health: {health}");
+            SetHealthText();
+            // Debug.Log($"Health: {health}");
         }
 
         if (other.GetComponent<Collider>().tag == "Goal")
         {
-            Debug.Log("You Win!");
+            winLoseBG.color = Color.green;
+            winLoseText.color = Color.black;
+            winLoseText.text = "You Win!";
+            winLoseBG.transform.gameObject.SetActive(true);
+            // Debug.Log("You Win!");
         }
 	}
+    void SetScoreText()
+    {
+        scoreText.text = "Score: " + score.ToString();
+    }
+    void SetHealthText()
+    {
+        healthText.text = "Health: " + health.ToString();
+    }
 }
